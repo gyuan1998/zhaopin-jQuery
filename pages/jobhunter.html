@@ -1,0 +1,483 @@
+<style>
+    /* 表格的样式 */
+    #table{
+        text-align: center;
+    }
+    /* 最大的框 */
+    #out{
+        position: relative;
+    }
+    /* 添加按钮 */
+    #btn_add_jobter{
+        position: absolute;
+        right: 90px;
+        z-index: 10;
+    }
+    /* 导入按钮 */
+    #btn_leading_jobter{
+        position: absolute;
+        right: 0;
+        z-index: 10;
+
+    }
+    /* 导航栏 */
+    #out #myTab{
+        position: relative;
+    }
+    /* 搜索框的样式 */
+    #search_box{
+        width: 250px;
+        position: absolute;
+        right: 0px;
+        top: 50px;
+    }
+    /* 表格 */
+    #table{
+        margin-top: 60px;
+    }
+    /* 学历查找框 */
+    #education{
+        width: 150px;
+        position: absolute ;
+        top: 50px;
+    }
+    /* 性别查找框 */
+    #gender{
+        width: 150px;
+        position: absolute ;
+        top: 50px;
+        left: 180px;
+    }
+    /* 用户名查找框 */
+    #username{
+        width: 150px;
+        position: absolute ;
+        top: 50px;
+        left: 360px;
+    }
+</style>
+
+<script>
+    var baselink = "http://203.195.246.58:7777";
+    // 定义一个全局变量id，修改时赋值进去
+    var a_id;
+    // 加载数据
+    function reloadData(){
+        var url =baselink + "/Jobhunter/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.birth+`</td>
+                    <td>`+item.currentStatus+`</td>
+                    <td>`+item.education+`</td>
+                    <td>`+item.gender+`</td>
+                    <td>`+item.password+`</td>
+                    <td>`+item.realname+`</td>
+                    <td>`+item.resume+`</td>
+                    <td>`+item.telephone+`</td>
+                    <td>`+item.username+`</td>
+                    <td>`+item.workTime+`</td>
+                    <td>
+                    <button id="btn_del_jobter_add" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_jobter_add" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+    }
+
+    // 添加商家
+    function jobter_add(){
+        
+        var url = baselink + "/Jobhunter/saveOrUpdate"; 
+
+        var gender= $("#add_jobter").find("input[name=gender]").val();
+        var realname= $("#add_jobter").find("input[name=realname]").val();
+        var education= $("#add_jobter").find("input[name=education]").val();
+        var password= $("#add_jobter").find("input[name=password]").val();
+        var birth= $("#add_jobter").find("input[name=birth]").val();
+        var currentStatus= $("#add_jobter").find("input[name=currentStatus]").val();
+        var resume= $("#add_jobter").find("input[name=resume]").val();
+        var telephone= $("#add_jobter").find("input[name=telephone]").val();
+        var username= $("#add_jobter").find("input[name=username]").val();
+        var workTime= $("#add_jobter").find("input[name=workTime]").val();
+
+        var data = "";
+        if(a_id){
+            data = {
+                id:a_id,
+                gender : gender,
+                realname : realname,
+                education : education,
+                password :password,
+                birth : birth,
+                currentStatus :currentStatus,
+                resume :resume,
+                telephone :telephone,
+                username : username,
+                workTime :workTime,
+            }
+        }else{
+            data = {
+                gender : gender,
+                realname : realname,
+                education : education,
+                password :password,
+                birth : birth,
+                currentStatus :currentStatus,
+                resume :resume,
+                telephone :telephone,
+                username : username,
+                workTime :workTime,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                reloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把a_id 清空，不然下次还会是修改
+        a_id = "";
+
+    }
+     
+    // 按学历查询
+    function by_education(){
+        var data = $("#education").val();
+        var url = baselink + "/Jobhunter/findByEducation";
+        $.get(url,"education="+data,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr=$(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.birth+`</td>
+                    <td>`+item.currentStatus+`</td>
+                    <td>`+item.education+`</td>
+                    <td>`+item.gender+`</td>
+                    <td>`+item.password+`</td>
+                    <td>`+item.realname+`</td>
+                    <td>`+item.resume+`</td>
+                    <td>`+item.telephone+`</td>
+                    <td>`+item.username+`</td>
+                    <td>`+item.workTime+`</td>
+                    <td>
+                    <button id="btn_del_jobter_add" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_jobter_add" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+                    $("#table tbody").append(newTr);
+                });
+            }
+        });
+    }
+
+    // 按性别查询
+    function by_gender(){
+        var data = $("#gender").val();
+        var url = baselink + "/Jobhunter/findByGender";
+        $.get(url,"gender="+data,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr=$(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.birth+`</td>
+                    <td>`+item.currentStatus+`</td>
+                    <td>`+item.education+`</td>
+                    <td>`+item.gender+`</td>
+                    <td>`+item.password+`</td>
+                    <td>`+item.realname+`</td>
+                    <td>`+item.resume+`</td>
+                    <td>`+item.telephone+`</td>
+                    <td>`+item.username+`</td>
+                    <td>`+item.workTime+`</td>
+                    <td>
+                    <button id="btn_del_jobter_add" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_jobter_add" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+                    $("#table tbody").append(newTr);
+                });
+            }
+        });
+    }
+
+    // 把所有用户名放到下拉菜单
+    function username(){
+        var url =baselink + "/Jobhunter/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                var arr=[];
+                result.data.forEach(function(item){
+                    arr.push(item.username);
+                });
+                console.log(arr);
+                Array.prototype.myInfo=function(){
+                    var Newarr=[];
+                    for(var i=0;i<arr.length;i++){
+                        var a =Newarr.indexOf(arr[i]);
+                        if(a == -1){
+                            Newarr[Newarr.length] = arr[i];
+                        }
+                    }
+                    return Newarr;
+                }
+                var result = arr.myInfo();
+                console.log(result);
+                result.forEach(function(item){
+                    if(item != null && item!= ""){
+                        var newTr = $(`<option>`+item+`</option>`);
+                        $("#username").append(newTr);
+                    }    
+                });
+                
+            }
+        });
+    }
+
+    // 按用户名查询
+    function by_username(){
+        var data = $("#username").val();
+        var url = baselink + "/Jobhunter/findByUsername";
+        $.get(url,"username="+data,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr=$(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.birth+`</td>
+                    <td>`+item.currentStatus+`</td>
+                    <td>`+item.education+`</td>
+                    <td>`+item.gender+`</td>
+                    <td>`+item.password+`</td>
+                    <td>`+item.realname+`</td>
+                    <td>`+item.resume+`</td>
+                    <td>`+item.telephone+`</td>
+                    <td>`+item.username+`</td>
+                    <td>`+item.workTime+`</td>
+                    <td>
+                    <button id="btn_del_jobter_add" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_jobter_add" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+                    $("#table tbody").append(newTr);
+
+                });
+            }
+        });
+    }
+
+    // 添加按钮，弹出模态框
+    $("#btn_add_jobter").click(function(){
+        $("#add_jobter").modal("show"); 
+    });
+
+    // 点击模态框的确认按钮，存入数据
+    $("#jobter_sure").click(function(){
+        jobter_add();
+    });
+
+    // 模态框关闭
+    $("#jobter_sure").click(function(){
+        $("#add_jobter").modal("hide");
+    });
+
+    // 监听模态框关闭，清空数据
+    $('#add_jobter').on("hidden.bs.modal",function(e){
+        $(this).find('form')[0].reset();
+    })
+    
+
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        reloadData();
+
+        username();
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "btn_del_jobter_add":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                    var url = baselink + "/Jobhunter/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            reloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                }
+                break;
+
+                // 修改事件
+                case "btn_upd_jobter_add":{
+                    $("#add_jobter").modal('show');
+                    a_id = $(this).parents('tr').children('td').find('input').val();
+                    var birth= $(this).parents('tr').children('td:nth-child(2)').text();
+                    var currentStatus= $(this).parents('tr').children('td:nth-child(3)').text();
+                    var education= $(this).parents('tr').children('td:nth-child(4)').text();
+                    var gender= $(this).parents('tr').children('td:nth-child(5)').text();
+                    var password= $(this).parents('tr').children('td:nth-child(6)').text();
+                    var realname= $(this).parents('tr').children('td:nth-child(7)').text();
+                    var resume= $(this).parents('tr').children('td:nth-child(8)').text();
+                    var telephone=$(this).parents('tr').children('td:nth-child(9)').text() ;
+                    var username= $(this).parents('tr').children('td:nth-child(10)').text();
+                    var workTime= $(this).parents('tr').children('td:nth-child(11)').text();
+                    
+                    $("#birth_modal").val(birth);
+                    $("#currentStatus_modal").val(currentStatus);
+                    $("#education_modal").val(education);
+                    $("#gender_modal").val(gender);
+                    $("#password_modal").val(password);
+                    $("#realname_modal").val(realname);
+                    $("#resume_modal").val(resume);
+                    $("#telephone_modal").val(telephone);
+                    $("#username_modal").val(username);
+                    $("#workTime_modal").val(workTime);
+    
+                }
+                break;
+            }
+        });
+
+
+        // 根据id查询
+        $("#btn_search_jobter").click(function(){
+            var url=baselink + "/Jobhunter/findById";
+            var id = $("#search_jobter").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).birth+`</td>
+                            <td>`+(result.data).currentStatus+`</td>
+                            <td>`+(result.data).education+`</td>
+                            <td>`+(result.data).gender+`</td>
+                            <td>`+(result.data).password+`</td>
+                            <td>`+(result.data).realname+`</td>
+                            <td>`+(result.data).resume+`</td>
+                            <td>`+(result.data).telephone+`</td>
+                            <td>`+(result.data).username+`</td>
+                            <td>`+(result.data).workTime+`</td>
+                            <td>
+                            <button id="btn_del_jobter_add" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="btn_upd_jobter_add" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        
+    });
+
+</script>
+
+<!-- 最外面的容器 -->
+<div id="out" >
+
+    <!-- 添加按钮 -->
+    <button id="btn_add_jobter" type="button" class="btn btn-warning btn-sm" >添加用户</button>
+    <button id="btn_leading_jobter" type="button" class="btn btn-primary btn-sm" >导入用户</button>
+
+    <!-- 导航 -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">用户列表</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <!-- 下拉学历 -->
+            <select id="education" class="form-control" onchange="by_education()">
+                <option selected style="display: none" >学历</option>
+                <option>博士</option>
+                <option>硕士</option>
+                <option>本科</option>
+                <option>大专</option>
+                <option>高中</option>
+                <option>初中</option>
+            </select>
+
+            <!-- 下拉性别 -->
+            <select id="gender" class="form-control" onchange="by_gender()">
+                <option selected style="display: none" >性别</option>
+                <option>男</option>
+                <option>女</option>
+            </select>
+
+            <!-- 下拉用户名 -->
+            <select id="username" class="form-control" onchange="by_username()">
+                <option selected style="display: none" >用户名</option>
+                
+            </select>
+            <!-- 搜索框、搜索按钮 -->
+            <div id="search_box" class="input-group ">
+                <input id="search_jobter" type="text" class="form-control" placeholder="请输入id查询" aria-label="输入的id是" aria-describedby="search">
+                <div class="input-group-append">
+                    <button id="btn_search_jobter" class="btn btn btn-dark" type="button" >查询</button>
+                </div>
+            </div>
+            <!-- 表格，表头 -->
+            <table id="table" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr >
+                    <th scope="col" >编号</th>
+                    <th scope="col" >出生日期</th>
+                    <th scope="col" >求职状态</th>
+                    <th scope="col" >学历</th>
+                    <th scope="col" >性别</th>
+                    <th scope="col" >密码</th>
+                    <th scope="col" >真实姓名</th>
+                    <th scope="col" >简历</th>
+                    <th scope="col" >联系方式</th>
+                    <th scope="col" >用户名</th>
+                    <th scope="col" >工作时间</th>
+                    <th scope="col" style="width: 120px;">操作</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+
+</div>

@@ -1,0 +1,344 @@
+<style>
+   /* 表格的样式 */
+   #table{
+        text-align: center;
+        margin-top: 60px;
+    }
+    /* 最大的框 */
+    #big{
+        position: relative;
+    }
+    /* 添加按钮 */
+    #btn_addemp{
+        position: absolute;
+        right: 100px;
+        z-index: 10;
+    }
+    /* 导入按钮 */
+    #btn_leading_emp{
+        position: absolute;
+        right: 10px;
+        z-index: 10;
+        color: #fff;
+    }
+    /* 导航栏 */
+    #big #myTabContent{
+        position: relative;
+    }
+    /* 搜索框的样式 */
+    #search_box{
+        width: 250px;
+        position: absolute;
+        right: 10px;
+        top: 70px;
+    }  
+    
+</style>
+
+<script>
+    var Baseurl = "http://203.195.246.58:7777";
+    // 定义一个全局变量id，修改时赋值进去
+    var overid;
+
+    // 加载数据
+    function reloadData(){
+        var url =Baseurl + "/Employment/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td ><input type="checkbox" value="`+item.id+`"></td>
+                    <td >`+item.businessId+`</td>
+                    <td >`+item.contactName+`</td>
+                    <td >`+item.contactPhone+`</td>
+                    <td >`+item.job+`</td>
+                    <td >`+item.num+`</td>
+                    <td >`+item.salary+`</td>
+                    <td >`+item.status+`</td>
+                    <td >`+item.title+`</td>
+                    <td >`+item.welfare+`</td>
+                    <td><a href="#" style="color:rgb(19, 100, 133);" value="`+item.id+`">查看</a></td>
+                    <td style="width:120px;">
+                    <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_revise" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+
+        
+    }
+
+    // 点击 查看，查看详情
+    $("#table tbody").on("click","a",function(){
+        var url = Baseurl + "/Employment/findById";
+        var id=$(this).attr("value");
+        var data = "id="+id;
+        $("#header").empty();
+        $("#body").empty();
+        $.get(url,data,function(result){
+            var newheader=$(`<div style="width:480px; position:relative; ">
+                <span style="line-height:30px; font-size:20px; ">`+result.data.title+`</span>
+                <div style="line-height:30px; font-size:20px; color:rgb(223, 166, 60); position:absolute; right:10px; top:0;">`+result.data.salary+`元/月</div>
+                <div style="line-height:20px; margin-top:20px;">需要人数 : `+result.data.num+`</div>
+                <div style="line-height:20px; width:90px; text-align:center; margin-top:20px; background-color:rgba(10, 173, 23, 0.993)">`+result.data.welfare+`</div>
+                <div style="line-height:20px; margin-top:20px;">商家 : `+result.data.businessId+`</div>
+
+                </div>`);
+                
+            $("#view_modal #header").append(newheader);
+            var newbody=$(`<div style="font-size:14px;">
+                <div style="line-height:80px;">职位描述 ： `+result.data.description+`</div>
+                
+                </div>`);
+            $("#view_modal #body").append(newbody);
+        });
+        $("#view_modal").modal("show");
+    });
+
+    // 添加招聘信息
+    function employment_add(){
+        var url = Baseurl + "/Employment/saveOrUpdate";        
+        var businessId= $("#add_emp").find("input[name=businessId]").val();
+        var liaison= $("#add_emp").find("input[name=liaison]").val();
+        var contact= $("#add_emp").find("input[name=contact]").val();
+        var detail= $("#add_emp").find("input[name=detail]").val();   
+        var job= $("#add_emp").find("input[name=job]").val();
+        var num= $("#add_emp").find("input[name=num]").val(); 
+        var salary= $("#add_emp").find("input[name=salary]").val();
+        var state= $("#add_emp").find("input[name=state]").val();
+        var title= $("#add_emp").find("input[name=title]").val();
+        var welfare= $("#add_emp").find("input[name=welfare]").val();
+
+        var data = "";
+
+        if(overid){
+            data = {
+                id:overid,
+                businessId:businessId ,
+                contactName:liaison ,
+                contactPhone :contact,
+                description :detail,
+                job :job,
+                num :num,
+                salary : salary,
+                status :state,
+                title :title,
+                welfare : welfare,
+            }
+        }else{
+            data = {
+                businessId:businessId ,
+                contactName:liaison ,
+                contactPhone :contact,
+                description :detail,
+                job :job,
+                num :num,
+                salary : salary,
+                status :state,
+                title :title,
+                welfare : welfare,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                reloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把overid 清空，不然下次还会是修改
+        overid = "";
+    }
+
+    // 模态框关闭
+    $("#bus_sure").click(function(){
+        $("#add_emp").modal("hide");
+    });
+
+    
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        reloadData();
+
+        
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "btn_del":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                    var url = Baseurl + "/Employment/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            reloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                    console.log(111)
+                }
+                break;
+
+                // 修改事件
+                case "btn_revise":{
+                    $("#add_emp").modal('show');
+
+                    overid = $(this).parents('tr').children('td').find('input').val();
+
+                    var businessId= $(this).parents('tr').children('td:nth-child(2)').text();
+                    var liaison= $(this).parents('tr').children('td:nth-child(3)').text();
+                    var contact= $(this).parents('tr').children('td:nth-child(4)').text();
+                    var detail= $(this).parents('tr').children('td:nth-child(5)').text();
+                    var job= $(this).parents('tr').children('td:nth-child(6)').text();
+                    var num= $(this).parents('tr').children('td:nth-child(7)').text();
+                    var salary= $(this).parents('tr').children('td:nth-child(8)').text();
+                    var state= $(this).parents('tr').children('td:nth-child(9)').text();
+                    var title= $(this).parents('tr').children('td:nth-child(10)').text();
+                    var welfare= $(this).parents('tr').children('td:nth-child(11)').text();
+                    
+                    
+                    $("#businessId_modal").val(businessId);
+                    $("#liaison_modal").val(liaison);
+                    $("#contact_modal").val(contact);
+                    $("#detail_modal").val(detail);
+                    $("#job_modal").val(job);
+                    $("#num_modal").val(num);
+                    $("#salary_modal").val(salary);
+                    $("#state_modal").val(state);
+                    $("#title_modal").val(title);
+                    $("#welfare_modal").val(welfare);
+
+                }
+                break;
+            }
+        });
+
+        // 根据id查询
+        $("#btn_find").click(function(){
+            var url=Baseurl + "/Employment/findById";
+            var id = $("#find").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    console.log(result.data);
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td sty><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).businessId+`</td>
+                            <td>`+(result.data).contactName+`</td>
+                            <td>`+(result.data).contactPhone+`</td>
+                            <td>`+(result.data).description+`</td>
+                            <td>`+(result.data).job+`</td>
+                            <td>`+(result.data).num+`</td>
+                            <td>`+(result.data).salary+`</td>
+                            <td>`+(result.data).status+`</td>
+                            <td>`+(result.data).title+`</td>
+                            <td>`+(result.data).welfare+`</td>
+
+                            
+                            <td>
+                            <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="btn_upd" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        // 添加按钮，弹出模态框
+        $("#btn_addemp").click(function(){
+            $("#add_emp").modal("show"); 
+        });
+
+        // 点击模态框的确认按钮，存入数据
+        $("#bus_sure").click(function(){
+            employment_add();
+        });
+
+        // 监听模态框关闭，清空数据
+        $('#add_emp').on("hidden.bs.modal",function(e){
+            $(this).find('form')[0].reset();
+        })
+    });
+
+
+
+
+</script>
+
+
+<div class="big">
+    <!-- 添加按钮 -->
+    <button id="btn_addemp" type="button" class="btn btn-warning btn-sm" style="margin-bottom: 20px;">添加招聘</button>
+    <button id="btn_leading_emp" type="button" class="btn btn-primary btn-sm" >导入招聘</button>
+
+    <!-- 导航 -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">招聘中</a>
+        </li>
+        
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <!-- 招聘中 -->
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <!-- 搜索框、搜索按钮 -->
+                <div id="search_box" class="input-group ">
+                    <input id="find" type="text" class="form-control" placeholder="请输入id查询" aria-label="输入的id是" aria-describedby="search">
+                    <div class="input-group-append">
+                        <button id="btn_find" class="btn btn btn-dark" type="button" >查询</button>
+                    </div>
+                </div>
+                <!-- 表格，表头 -->
+                <table id="table" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr >
+                        <th scope="col" >编号</th>
+                        <th scope="col" >商家id</th>
+                        <th scope="col" >联系人姓名</th>
+                        <th scope="col" >联系方式</th>
+                        <th scope="col" >工作</th>
+                        <th scope="col" >需要人数</th>
+                        <th scope="col" >工资</th>
+                        <th scope="col" >状态</th>
+                        <th scope="col" >招聘标题</th>
+                        <th>福利</th>
+                        <th scope="col" >详细描述</th>
+                        <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            
+                    </tbody>
+                </table>
+        </div>
+
+        
+
+
+        
+    </div>
+</div>

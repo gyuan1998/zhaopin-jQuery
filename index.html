@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>招聘网站后台</title>
+
+  <link rel="stylesheet" href="./bootstrap/css/bootstrap.css">
+  <link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.js"></script>
+  <script type="text/javascript" src="./bootstrap/js/bootstrap.js"></script>
+  
+
+  <link rel="stylesheet" href="./layui/css/layui.css">
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+
+  
+
+  <script src="./js/index.js"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo"></div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+   <!--  <ul class="layui-nav layui-layout-left">
+      <li class="layui-nav-item"><a href="">控制台</a></li>
+      <li class="layui-nav-item"><a href="">商品管理</a></li>
+      <li class="layui-nav-item"><a href="">用户</a></li>
+      <li class="layui-nav-item">
+        <a href="javascript:;">其它系统</a>
+        <dl class="layui-nav-child">
+          <dd><a href="">邮件管理</a></dd>
+          <dd><a href="">消息管理</a></dd>
+          <dd><a href="">授权管理</a></dd>
+        </dl>
+      </li>
+    </ul> -->
+    <div>
+      <!-- <img src="images/ww.png" style="position:absolute;left:83%;top:13%;"> -->
+    </div>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+          John Doe
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">退出</a></dd>
+          <!-- <dd><a href="">安全设置</a></dd> -->
+        </dl>
+      </li>
+      <!-- <li class="layui-nav-item"><a href="">退了</a></li> -->
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" id="nav"  lay-filter="test">
+        <!-- <li class="layui-nav-item layui-nav-itemed">
+          <a class="" href="javascript:;">所有商品</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;">列表一</a></dd>
+            <dd><a href="javascript:;">列表二</a></dd>
+            <dd><a href="javascript:;">列表三</a></dd>
+            <dd><a href="">超链接</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">解决方案</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;">列表一</a></dd>
+            <dd><a href="javascript:;">列表二</a></dd>
+            <dd><a href="">超链接</a></dd>
+          </dl>
+        </li> -->
+        <li class="layui-nav-item"><a href="javascript:void(0);" url="./pages/first.html"> <i class="layui-icon">&#xe68e;</i>首页</a></li>
+        <li class="layui-nav-item "><a href="#" url="./pages/business.html"><i class="layui-icon">&#xe66f;</i>商家管理</a></li>
+        <li class="layui-nav-item "><a href="#" url="./pages/employment.html"><i class="layui-icon">&#xe655;</i>招聘管理</a></li>
+        <li class="layui-nav-item "><a href="#" url="./pages/jobhunter.html"><i class="layui-icon">&#xe770;</i>用户管理</a></li>
+        <li class="layui-nav-item "><a href="#" url="./pages/module.html"><i class="layui-icon">&#xe620;</i>模块管理</a></li>
+        
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body" >
+    <!-- 内容主体区域 -->
+    <div id="wrapper">
+      
+      
+
+    
+    </div>
+  
+  <div class="layui-footer">
+    <!-- 底部固定区域 -->
+    <!-- © layui.com - 底部固定区域 -->
+  </div>
+</div>
+<script src="./layui/layui.js"></script>
+
+<script>
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+  
+});
+
+  
+</script>
+
+<!-- 添加商家模态框 -->
+<div id="add_bus" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">添加商家信息</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form>
+                  <div class="form-group">
+                      <label for="contactName_modal">联系人: </label>
+                      <input type="text" class="form-control" id="contactName_modal" name="contactName" placeholder="请输入联系人">
+                  </div>
+                  <div class="form-group">
+                      <label for="contactPhone_modal">联系方式: </label>
+                      <input type="text" class="form-control" id="contactPhone_modal" name="contactPhone" placeholder="请输入联系方式">                            
+                  </div>
+                  <div class="form-group">
+                      <label for="industry_modal">行业类型: </label>
+                      <input type="text" class="form-control" id="industry_modal" name="industry" placeholder="请输入行业类型">
+                  </div>
+                  <div class="form-group">
+                      <label for="location_modal">地址: </label>
+                      <input type="text" class="form-control" id="location_modal" name="location" placeholder="请输入地址">
+                  </div>
+                  <div class="form-group">
+                      <label for="name_modal">商家名称: </label>
+                      <input type="text" class="form-control" id="name_modal" name="name" placeholder="请输入商家名称">
+                  </div>
+                  <div class="form-group">
+                      <label for="scale_modal">公司规模: </label>
+                      <input type="text" class="form-control" id="scale_modal" name="scale" placeholder="请输入公司规模">
+                  </div>
+                  <div class="form-group">
+                      <label for="establishedTime_modal">成立时间: </label>
+                      <input type="text" class="form-control" id="establishedTime_modal" name="establishedTime" placeholder="请输入成立时间">
+                  </div>
+                  <div class="form-group">
+                      <label for="registeredCapital_modal">注册资本: </label>
+                      <input type="name" class="form-control" id="registeredCapital_modal" name="registeredCapital" placeholder="请输入注册资本">
+                  </div>
+                  <div class="form-group">
+                      <label for="businessLicense_modal">营业执照: </label>
+                      <input type="text" class="form-control" id="businessLicense_modal" name="businessLicense" placeholder="请输入营业执照">
+                  </div>
+                  <div class="form-group">
+                      <label for="status_modal">状态: </label>
+                      <input type="text" class="form-control" id="status_modal" name="status" placeholder="请输入状态">
+                  </div>
+                  <div class="form-group">
+                    <label for="description_modal">详细信息: </label>
+                    <input type="text" class="form-control" id="description_modal" name="description" placeholder="请输入详细信息">
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button id="sure" type="button" class="btn btn-primary">确定</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+<!-- 添加招聘信息模态框 -->
+<div id="add_emp" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">添加招聘信息</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form>
+                  <div class="form-group">
+                      <label for="businessId_modal">商家id: </label>
+                      <input type="text" class="form-control" id="businessId_modal" name="businessId" placeholder="请输入商家id">
+                  </div>
+                  <div class="form-group">
+                      <label for="liaison_modal">联系人姓名: </label>
+                      <input type="text" class="form-control" id="liaison_modal" name="liaison" placeholder="请输入联系人姓名">                            
+                  </div>
+                  <div class="form-group">
+                      <label for="contact_modal">联系方式: </label>
+                      <input type="text" class="form-control" id="contact_modal" name="contact" placeholder="请输入联系方式">
+                  </div>
+                  <div class="form-group">
+                      <label for="detail_modal">详细描述: </label>
+                      <input type="text" class="form-control" id="detail_modal" name="detail" placeholder="请输入详细描述">
+                  </div>
+                  <div class="form-group">
+                      <label for="job_modal">工作: </label>
+                      <input type="text" class="form-control" id="job_modal" name="job" placeholder="请输入工作">
+                  </div>
+                  <div class="form-group">
+                      <label for="num_modal">需要人数: </label>
+                      <input type="text" class="form-control" id="num_modal" name="num" placeholder="请输入需要人数">
+                  </div>
+                  <div class="form-group">
+                      <label for="salary_modal">工资: </label>
+                      <input type="text" class="form-control" id="salary_modal" name="salary" placeholder="请输入工资">
+                  </div>
+                  <div class="form-group">
+                    <label for="state_modal">状态: </label>
+                    <input type="text" class="form-control" id="state_modal" name="state" placeholder="请输入状态">
+                  </div>
+                  <div class="form-group">
+                      <label for="title_modal">招聘标题: </label>
+                      <input type="text" class="form-control" id="title_modal" name="title" placeholder="请输入招聘状态">
+                  </div>
+                  <div class="form-group">
+                      <label for="welfare_modal">福利: </label>
+                      <input type="text" class="form-control" id="welfare_modal" name="welfare" placeholder="请输入福利">
+                  </div>
+                  
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button id="bus_sure" type="button" class="btn btn-primary">确定</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- 接口在修改 -->
+<div id="jobhunter_modal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">添加用户信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="jobhunterId_modal">求职者id: </label>
+                        <input type="text" class="form-control" id="jobhunterId_modal" name="jobhunterId" placeholder="请输入求职者id">
+                    </div>
+                    <div class="form-group">
+                        <label for="employmentId_modal">意向工作id: </label>
+                        <input type="text" class="form-control" id="employmentId_modal" name="employmentId" placeholder="请输入意向工作id">                            
+                    </div>
+                    <div class="form-group">
+                        <label for="askTime_modal">求职时间: </label>
+                        <input type="text" class="form-control" id="askTime_modal" name="askTime" placeholder="请输入求职时间">
+                    </div>
+                    <div class="form-group">
+                        <label for="remark_modal">标记: </label>
+                        <input type="text" class="form-control" id="remark_modal" name="remark" placeholder="请输入标记">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button id="jobhunter_sure" type="button" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+<!-- 添加用户信息模态框 -->
+<div id="add_jobter" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">添加用户信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="birth_modal">出生日期: </label>
+                        <input type="text" class="form-control" id="birth_modal" name="birth" placeholder="请输入出生日期">
+                    </div>
+                    <div class="form-group">
+                        <label for="currentStatus_modal">求职状态: </label>
+                        <input type="text" class="form-control" id="currentStatus_modal" name="currentStatus" placeholder="请输入求职状态">                            
+                    </div>
+                    <div class="form-group">
+                        <label for="education_modal">学历: </label>
+                        <input type="text" class="form-control" id="education_modal" name="education" placeholder="请输入学历">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender_modal">性别: </label>
+                        <input type="text" class="form-control" id="gender_modal" name="gender" placeholder="请输入性别">
+                    </div>
+                    <div class="form-group">
+                        <label for="password_modal">密码: </label>
+                        <input type="text" class="form-control" id="password_modal" name="password" placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="realname_modal">真实姓名: </label>
+                        <input type="text" class="form-control" id="realname_modal" name="realname" placeholder="请输入真实姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="resume_modal">简历: </label>
+                        <input type="text" class="form-control" id="resume_modal" name="resume" placeholder="请输入简历">
+                    </div>
+                    <div class="form-group">
+                      <label for="telephone_modal">联系方式: </label>
+                      <input type="text" class="form-control" id="telephone_modal" name="telephone" placeholder="请输入联系方式">
+                    </div>
+                    <div class="form-group">
+                        <label for="name_modal">用户名: </label>
+                        <input type="text" class="form-control" id="name_modal" name="username" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="workTime_modal">工作时间: </label>
+                        <input type="text" class="form-control" id="workTime_modal" name="workTime" placeholder="请输入工作时间">
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button id="jobter_sure" type="button" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<!-- 添加福利模态框 -->
+<div id="add_module" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">添加福利信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="name_modal">内容: </label>
+                            <input type="text" class="form-control" id="name_modal" name="name" placeholder="请输入内容">
+                        </div>
+                        <div class="form-group">
+                            <label for="status_modal">状态: </label>
+                            <input type="text" class="form-control" id="status_modal" name="status" placeholder="请输入状态">
+                        </div>
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button id="module_sure" type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+</div>
+
+
+
+<!-- 添加职位模态框 -->
+<div id="add_job" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">添加职位信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="name_modal">职位名称: </label>
+                            <input type="text" class="form-control" id="name_modal" name="name" placeholder="请输入职位名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="status_modal">职位分类: </label>
+                            <input type="text" class="form-control" id="status_modal" name="status" placeholder="请输入职位分类">
+                        </div>
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button  type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button id="job_sure" type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+</div>
+
+<!-- 商家 显示详情模态框 -->
+<div id="view_modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+            <form id="header">
+                
+            </form>
+        </div>
+        <div class="modal-body">
+            <form id="body">
+
+            </form>
+                        
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- 招聘 显示详情模态框 -->
+<div id="view_emp" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+            <form id="header">
+                
+            </form>
+        </div>
+        <div class="modal-body">
+            <form id="body">
+
+            </form>
+                        
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<style>
+    #table{
+      text-align: center;
+      }
+      /* 搜索框的样式 */
+      #search_box{
+          width: 300px;
+          position: absolute;
+          right: 10px;
+          top: 70px;
+      }
+      #home{
+          padding-top: 10px;
+      }
+      #profile{
+          padding-top: 10px;
+      }
+      /* 添加按钮 */
+    #btn_add_module{
+        position: absolute;
+        right: 100px;
+        z-index: 10;
+        top: 20px;
+    }
+    /* 导入按钮 */
+    #btn_leading_mod{
+        position: absolute;
+        right: 10px;
+        z-index: 10;
+        top: 20px;
+
+    }
+    #table{
+        margin-top: 50px;
+    }
+</style>
+
+<script>
+
+// 福利管理=========================================
+var baselink = "http://203.195.246.58:7777";
+    // 定义一个全局变量id，修改时赋值进去
+    var b_id;
+    // 加载数据
+    function reloadData(){
+        var url =baselink + "/Welfare/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.name+`</td>
+                    <td>`+item.status+`</td>
+                    <td>
+                    <button id="btn_del_module" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_module" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+    }
+
+    // 添加福利
+    function module_add(){
+        
+        var url = baselink + "/Welfare/saveOrUpdate"; 
+        var name= $("#add_module").find("input[name=name]").val();
+        var status= $("#add_module").find("input[name=status]").val();
+
+        var data = "";
+        if(b_id){
+            data = {
+                id:b_id,
+                name : name,
+                status :status,
+            }
+        }else{
+            data = {
+                name : name,
+                status :status,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                reloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把b_id 清空，不然下次还会是修改
+        b_id = "";
+
+    }
+    
+    // 点击模态框按钮，模态框关闭
+    $("#module_sure").click(function(){
+        $("#add_module").modal("hide");
+    });
+        
+
+    // 添加按钮，弹出模态框
+    $("#btn_add_module").click(function(){
+        $("#add_module").modal("show"); 
+    });
+
+    // 点击模态框的确认按钮，存入数据
+    $("#module_sure").click(function(){
+        module_add();
+    });
+
+    // 监听模态框关闭，清空数据
+    $('#add_module').on("hidden.bs.modal",function(e){
+        $(this).find('form')[0].reset();
+    })
+    
+
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        reloadData();
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "btn_del_module":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                    var url = baselink + "/Welfare/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            reloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                }
+                break;
+
+                // 修改事件
+                case "btn_upd_module":{
+                    $("#add_module").modal('show');
+                    b_id = $(this).parents('tr').children('td').find('input').val();
+                    
+                    var name= $(this).parents('tr').children('td:nth-child(2)').text();
+                    var status= $(this).parents('tr').children('td:nth-child(3)').text();
+                    
+                  
+                    $("#add_module #name_modal").val(name);
+                    $("#add_module #status_modal").val(status);
+    
+                }
+                break;
+            }
+        });
+
+
+        // 根据id查询
+        $("#btn_search_module").click(function(){
+            var url=baselink + "/Welfare/findById";
+            var id = $("#search_module").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    console.log(result.data);
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).name+`</td>
+                            <td>`+(result.data).status+`</td>
+                            <td>
+                            <button id="btn_del_module" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="btn_upd_module" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        
+    });
+
+
+
+// ============================职位管理=======================================================
+    /*$("#profile").click(function(){
+      
+    // 定义一个全局变量id，修改时赋值进去
+    var c_id;
+    // 加载数据
+    function job_reloadData(){
+        var url =baselink + "/Jobs/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.name+`</td>
+                    <td>`+item.status+`</td>
+                    <td>
+                    <button id="btn_del_job" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd_job" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+    }
+
+    // 添加商家
+    function job_add(){
+        
+        var url = baselink + "/Jobs/saveOrUpdate"; 
+        var name= $("#add_job").find("input[name=name]").val();
+        var status= $("#add_job").find("input[name=status]").val();
+
+        var data = "";
+        if(c_id){
+            data = {
+                id:c_id,
+                name : name,
+                status :status,
+            }
+        }else{
+            data = {
+                name : name,
+                status :status,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                job_reloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把c_id 清空，不然下次还会是修改
+        c_id = "";
+
+    }
+    
+    // 模态框关闭
+    $("#job_sure").click(function(){
+        $("#add_job").modal("hide");
+    });
+        
+
+    // 添加按钮，弹出模态框
+    $("#btn_add_job").click(function(){
+        $("#add_job").modal("show"); 
+    });
+
+    // 点击模态框的确认按钮，存入数据
+    $("#job_sure").click(function(){
+        job_add();
+    });
+
+    // 监听模态框关闭，清空数据
+    $('#add_job').on("hidden.bs.modal",function(e){
+        $(this).find('form')[0].reset();
+    })
+    
+
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        job_reloadData();
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "btn_del_job":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                    var url = baselink + "/Jobs/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            job_reloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                }
+                break;
+
+                // 修改事件
+                case "btn_upd_job":{
+                    $("#add_job").modal('show');
+                    c_id = $(this).parents('tr').children('td').find('input').val();
+                    
+                    var name= $(this).parents('tr').children('td:nth-child(2)').text();
+                    var status= $(this).parents('tr').children('td:nth-child(3)').text();
+                    
+                  
+                    $("#add_job #name_modal").val(name);
+                    $("#add_job #status_modal").val(status);
+    
+                }
+                break;
+            }
+        });
+
+
+        // 根据id查询
+        $("#btn_search_job").click(function(){
+            var url=baselink + "/Jobs/findById";
+            var id = $("#search_job").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    console.log(result.data);
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).name+`</td>
+                            <td>`+(result.data).status+`</td>
+                            <td>
+                            <button id="btn_del_job" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="btn_upd_job" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        
+    });
+    });*/
+
+
+
+
+</script>
+
+<div id="big">
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">福利管理</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <!-- 福利管理 -->
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+              <!-- 添加按钮 -->
+                <button id="btn_add_module" type="button" class="btn btn-warning btn-sm" >添加福利</button>
+                <button id="btn_leading_mod" type="button" class="btn btn-primary btn-sm" >导入福利</button>
+              <!-- 搜索框、搜索按钮 -->
+              <div id="search_box" class="input-group ">
+                  <input id="search_module" type="text" class="form-control" placeholder="请输入id查询" aria-label="输入的id是" aria-describedby="search">
+                  <div class="input-group-append">
+                      <button id="btn_search_module" class="btn btn btn-dark" type="button" >查询</button>
+                  </div>
+              </div>
+              <!-- 表格，表头 -->
+              <table id="table" class="table table-striped">
+                  <thead class="thead-dark">
+                      <tr >
+                      <th scope="col" style="width: 100px;">编号</th>
+                      <th scope="col" >内容</th>
+                      <th scope="col" >状态</th>
+                      <th style="width:120px;">操作</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                          
+                  </tbody>
+              </table>
+
+        </div>
+
+
+        
+
+</div>

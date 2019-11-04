@@ -1,0 +1,527 @@
+<style>
+    /* 表格的样式 */
+    #table{
+        text-align: center;
+        margin-top: 60px;
+    }
+    /* 最大的框 */
+    #out{
+        position: relative;
+    }
+    /* 添加按钮 */
+    #btn_add{
+        position: absolute;
+        right: 90px;
+        z-index: 10;
+    }
+    /* 导入按钮 */
+    #btn_leading_bus{
+        position: absolute;
+        right: 0;
+        z-index: 10;
+
+    }
+    /* 导航栏 */
+    #out #myTab{
+        position: relative;
+    }
+    /* 搜索框的样式 */
+    #search_box{
+        width: 250px;
+        position: absolute;
+        right: 0px;
+        top: 50px;
+    }  
+    /* 行业类型查找框 */
+    #industry{
+        width: 130px;
+        position: absolute ;
+        top: 50px;
+    }
+    /* 性别查找框 */
+    #scale{
+        width: 130px;
+        position: absolute ;
+        top: 50px;
+        left: 160px;
+        color: rgb(122, 121, 121);
+        
+    }
+    /* 用户名查找框 */
+    #username{
+        width: 130px;
+        position: absolute ;
+        top: 50px;
+        left: 330px;
+    }
+
+</style>
+
+<script>
+    var baseUrl = "http://203.195.246.58:7777";
+    // 定义一个全局变量id，修改时赋值进去
+    var Editid;
+    // 加载数据
+    function reloadData(){
+        var url =baseUrl + "/Business/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.name+`</td>
+                    <td>`+item.scale+`</td>
+                    <td>`+item.establishedTime+`</td>
+                    <td>`+item.industry+`</td>
+                    <td>`+item.contactName+`</td>
+                    <td>`+item.location+`</td>
+                    <td>`+item.contactPhone+`</td>
+                    <td>`+item.registeredCapital+`</td>
+                    <td><a href="#" style="color:rgb(19, 100, 133);" value="`+item.id+`">查看</a></td>
+                    <td>`+item.businessLicense+`</td>
+                    <td>`+item.status+`</td>
+                    <td>
+                    <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+    }
+
+    // 点击 查看，查看详情
+    $("#table tbody").on("click","a",function(){
+        var url = baseUrl + "/Business/findById";
+        var id=$(this).attr("value");
+        var data = "id="+id;
+        $("#header").empty();
+        $("#body").empty();
+        $.get(url,data,function(result){
+            var newheader=$(`<div style="height:70px;">
+                <h5 style="font-size:20px;">`+result.data.name+`</h5>
+                <div style="line-height:20px; font-size:14px; color:rgb(122, 121, 121); ">`+result.data.industry+`</div>
+                <div style="line-height:20px; font-size:14px; color:rgb(122, 121, 121);">`+result.data.scale+`</div></div>`);
+            $("#view_modal #header").append(newheader);
+            var newbody=$(`<div style="font-size:16px;">
+                <div style="line-height:20px;">行业类型 ： `+result.data.industry+`</div>
+                <div style="line-height:20px;">成立时间 ： `+result.data.establishedTime+`</div>
+                <div style="line-height:20px;"> 注册资本 ： `+result.data.registeredCapital+`</div>
+                <div style="line-height:40px; font-size:14px; color:rgb(122, 121, 121);"> 详细信息 ： `+result.data.description+`</div>
+                <div style="line-height:80px;"> 营业执照 ： `+result.data.businessLicense+`</div>
+                </div>`);
+            $("#view_modal #body").append(newbody);
+        });
+        $("#view_modal").modal("show");
+    });
+
+    // 添加商家
+    function business_add(){
+        var url = baseUrl + "/Business/saveOrUpdate";        
+        var contactName= $("#add_bus").find("input[name=contactName]").val();
+        var contactPhone= $("#add_bus").find("input[name=contactPhone]").val();
+        var industry= $("#add_bus").find("input[name=industry]").val();
+        var location= $("#add_bus").find("input[name=location]").val();
+        var name= $("#add_bus").find("input[name=name]").val();
+        var scale= $("#add_bus").find("input[name=scale]").val();
+        var establishedTime= $("#add_bus").find("input[name=establishedTime]").val();
+        var registeredCapital= $("#add_bus").find("input[name=registeredCapital]").val();
+        var description= $("#add_bus").find("input[name=description]").val();
+        var businessLicense= $("#add_bus").find("input[name=businessLicense]").val();
+        var status= $("#add_bus").find("input[name=status]").val();
+        var data = "";
+        if(Editid){
+            data = {
+                id:Editid,
+                contactName : contactName,
+                contactPhone : contactPhone,
+                industry : industry,
+                location :location,
+                name :name,
+                scale : scale,
+                establishedTime :establishedTime,
+                registeredCapital :registeredCapital,
+                description :description,
+                businessLicense : businessLicense,
+                status :status,
+            }
+        }else{
+            data = {
+                contactName : contactName,
+                contactPhone : contactPhone,
+                industry : industry,
+                location :location,
+                name :name,
+                scale : scale,
+                establishedTime :establishedTime,
+                registeredCapital :registeredCapital,
+                description :description,
+                businessLicense : businessLicense,
+                status :status,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                reloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把Editid 清空，不然下次还会是修改
+        Editid = "";
+    }
+    
+    // 把所有行业类型放到下拉菜单
+    function industry(){
+        var url =baseUrl + "/Business/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                var arr=[];
+                result.data.forEach(function(item){
+                    arr.push(item.industry);
+                });
+                Array.prototype.myInfo=function(){
+                    var Newarr=[];
+                    for(var i=0;i<arr.length;i++){
+                        var a =Newarr.indexOf(arr[i]);
+                        if(a == -1){
+                            Newarr[Newarr.length] = arr[i];
+                        }
+                    }
+                    return Newarr;
+                }
+                var result = arr.myInfo();
+                result.forEach(function(item){
+                    if(item != null && item!= ""){
+                        var newTr = $(`<option>`+item+`</option>`);
+                        $("#industry").append(newTr);
+                    }    
+                });
+            }else{
+                alert(result.message);
+            }
+        });
+    }
+
+    // 按行业类型查询
+    function by_industry(){
+        var data = $("#industry").val();
+        var url = baseUrl + "/Business/findByIndustry";
+        $.get(url,"industry="+data,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr=$(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.name+`</td>
+                    <td>`+item.scale+`</td>
+                    <td>`+item.establishedTime+`</td>
+                    <td>`+item.industry+`</td>
+                    <td>`+item.contactName+`</td>
+                    <td>`+item.location+`</td>
+                    <td>`+item.contactPhone+`</td>
+                    <td>`+item.registeredCapital+`</td>
+                    <td>`+item.description+`</td>
+                    <td>`+item.businessLicense+`</td>
+                    <td>`+item.status+`</td>
+                    <td>
+                    <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+                    $("#table tbody").append(newTr);
+
+                });
+            }
+        });
+    }
+
+     // 把所有公司规模放到下拉菜单
+     function scale(){
+        var url =baseUrl + "/Business/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                var arr=[];
+                result.data.forEach(function(item){
+                    arr.push(item.scale);
+                });
+                Array.prototype.myInfo=function(){
+                    var Newarr=[];
+                    for(var i=0;i<arr.length;i++){
+                        var a =Newarr.indexOf(arr[i]);
+                        if(a == -1){
+                            Newarr[Newarr.length] = arr[i];
+                        }
+                    }
+                    return Newarr;
+                }
+                var result = arr.myInfo();
+                result.forEach(function(item){
+                    if(item != null && item!= ""){
+                        var newTr = $(`<option>`+item+`</option>`);
+                        $("#scale").append(newTr);
+                    }    
+                });
+                
+            }else{
+                alert(result.message);
+            }
+        });
+    }
+
+    // 按公司规模查询
+    function by_scale(){
+        var data = $("#scale").val();
+        var url = baseUrl + "/Business/findByScale";
+        $.get(url,"scale="+data,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr=$(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.name+`</td>
+                    <td>`+item.scale+`</td>
+                    <td>`+item.establishedTime+`</td>
+                    <td>`+item.industry+`</td>
+                    <td>`+item.contactName+`</td>
+                    <td>`+item.location+`</td>
+                    <td>`+item.contactPhone+`</td>
+                    <td>`+item.registeredCapital+`</td>
+                    <td>`+item.description+`</td>
+                    <td>`+item.businessLicense+`</td>
+                    <td>`+item.status+`</td>
+                    <td>
+                    <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="btn_upd" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+                    $("#table tbody").append(newTr);
+
+                });
+            }
+        });
+    }
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    // 模态框关闭
+    $("#sure").click(function(){
+        $("#add_bus").modal("hide");
+        business_add();
+    });
+
+    
+     // 添加按钮，弹出模态框
+     $("#btn_add").click(function(){
+        $("#add_bus").modal("show"); 
+    });
+
+    // 监听模态框关闭，清空数据
+    $('#add_bus').on("hidden.bs.modal",function(e){
+        $(this).find('form')[0].reset();
+    })
+
+    
+    
+
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        reloadData();
+
+        // 文档加载就把得到的行业类型显示
+        industry();
+
+        // 文档加载就把得到的公司规模显示
+        scale();
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "btn_del":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                    var url = baseUrl + "/Business/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            reloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                }
+                break;
+
+                // 修改事件
+                case "btn_upd":{
+                    $("#add_bus").modal('show');
+                    Editid = $(this).parents('tr').children('td').find('input').val();
+                    var name = $(this).parents('tr').children('td:nth-child(2)').text();
+                    var scale= $(this).parents('tr').children('td:nth-child(3)').text();
+                    var establishedTime= $(this).parents('tr').children('td:nth-child(4)').text();
+                    var industry= $(this).parents('tr').children('td:nth-child(5)').text();
+                    var contactName= $(this).parents('tr').children('td:nth-child(6)').text();
+                    var location= $(this).parents('tr').children('td:nth-child(7)').text();
+                    var contactPhone= $(this).parents('tr').children('td:nth-child(8)').text();
+                    var registeredCapital= $(this).parents('tr').children('td:nth-child(9)').text();
+                    var description=$(this).parents('tr').children('td:nth-child(10)').text() ;
+                    var businessLicense= $(this).parents('tr').children('td:nth-child(11)').text();
+                    var status= $(this).parents('tr').children('td:nth-child(12)').text();
+                    
+                    $("#name_modal").val(name);
+                    $("#scale_modal").val(scale);
+                    $("#establishedTime_modal").val(establishedTime);
+                    $("#industry_modal").val(industry);
+                    $("#contactName_modal").val(contactName);
+                    $("#location_modal").val(location);
+                    $("#contactPhone_modal").val(contactPhone);
+                    $("#registeredCapital_modal").val(registeredCapital);
+                    $("#description_modal").val(description);
+                    $("#businessLicense_modal").val(businessLicense);
+                    $("#status_modal").val(status);
+
+ 
+                }
+                break;
+            }
+        });
+
+
+        // 根据id查询
+        $("#search").click(function(){
+            var url=baseUrl + "/Business/findById";
+            var id = $("#in").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).name+`</td>
+                            <td>`+(result.data).scale+`</td>
+                            <td>`+(result.data).establishedTime+`</td>
+                            <td>`+(result.data).industry+`</td>
+                            <td>`+(result.data).contactName+`</td>
+                            <td>`+(result.data).location+`</td>
+                            <td>`+(result.data).contactPhone+`</td>
+                            <td>`+(result.data).registeredCapital+`</td>
+                            <td>`+(result.data).description+`</td>
+                            <td>`+(result.data).businessLicense+`</td>
+                            <td>`+(result.data).status+`</td>
+                            <td>
+                            <button id="btn_del" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="btn_upd" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        
+    });
+
+</script>
+
+<!-- 最外面的容器 -->
+<div id="out" >
+    <!-- 添加按钮 -->
+    <button id="btn_add" type="button" class="btn btn-warning btn-sm" >添加商家</button>
+    <button id="btn_leading_bus" type="button" class="btn btn-primary btn-sm" >导入商家</button>
+    
+    <!-- 导航 -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">商家列表</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <!-- 下拉行业类型 -->
+            <select id="industry" class="form-control" onchange="by_industry()">
+                <option selected style="display: none" >行业类型</option>
+                
+            </select>
+
+            <!-- 下拉公司规模 -->
+            <select id="scale" class="form-control" onchange="by_scale()">
+                <option selected style="display: none" >公司规模</option>
+                
+            </select>
+
+            <!-- 搜索框、搜索按钮 -->
+            <div id="search_box" class="input-group ">
+                <input id="in" type="text" class="form-control" placeholder="请输入id查询" aria-label="输入的id是" aria-describedby="search">
+                <div class="input-group-append">
+                    <button id="search" class="btn btn btn-dark" type="button" >查询</button>
+                </div>
+            </div>
+            <!-- 表格，表头 -->
+            <table id="table" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr >
+                    <th scope="col" >编号</th>
+                    <th scope="col" style="width: 100px;">商家名称</th>
+                    <th scope="col" style="width: 80px;">公司规模</th>
+                    <th scope="col" style="width: 80px;">成立时间</th>
+                    <th scope="col" style="width: 80px;">行业类型</th>
+                    <th scope="col" style="width: 80px;">联系人</th>
+                    <th scope="col" style="width: 80px;">地址</th>
+                    <th scope="col" style="width: 80px;">联系方式</th>
+                    <th scope="col" style="width: 80px;">注册资本</th>
+                    <th scope="col" style="width: 80px;">详细信息</th>
+                    <th scope="col" style="width: 80px;">营业执照</th>
+                    <th scope="col" style="width: 80px;">状态</th>
+                    <th scope="col" style="width: 120px;">操作</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    
+
+    
+
+    
+    
+</div>

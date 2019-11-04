@@ -1,0 +1,224 @@
+<style>
+    /* 表格的样式 */
+    #table{
+        text-align: center;
+    }
+    /* 搜索框的样式 */
+    #search_box{
+        width: 300px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    
+</style>
+
+<script>
+    var BASEURL = "http://203.195.246.58:7777";
+    // 定义一个全局变量id，修改时赋值进去
+    var EDITID;
+    // 加载数据
+    function ReloadData(){
+        //var url =BASEURL + "/Employmentemployment_job/findAll";
+        $.get(url,function(result){
+            if(result.status === 200){
+                $("#table tbody").empty();
+                result.data.forEach(function(item){
+                    var newTr = $(`<tr>
+                    <td><input type="checkbox" value="`+item.id+`"></td>
+                    <td>`+item.employment_jobId+`</td>
+                    <td>`+item.employmentId+`</td>
+                    <td>`+item.askTime+`</td>  
+                    <td>`+item.remark+`</td>
+                    <td>
+                    <button id="del_employment_job" type="button" class="btn btn-dark btn-sm" >删除</button>
+                    <button id="upd_employment_job" type="button" class="btn btn-dark btn-sm" >修改</button>
+                    </td>
+                    
+                    </tr>`);
+
+                    $("#table tbody").append(newTr);
+                });
+                
+            }
+        });
+    }
+
+    // 添加商家
+    function employment_job_add(){
+        //var url = BASEURL + "/Employmentemployment_job/saveOrUpdate";        
+        var askTime= $("#employment_job_modal").find("input[name=askTime]").val();
+        var employment_jobId= $("#employment_job_modal").find("input[name=employment_jobId]").val();
+        var employmentId= $("#employment_job_modal").find("input[name=employmentId]").val();
+        var remark= $("#employment_job_modal").find("input[name=remark]").val();
+        var data = "";
+        if(EDITID){
+            data = {
+                id:EDITID,
+                askTime : askTime,
+                employment_jobId : employment_jobId,
+                employmentId :employmentId,
+                remark : remark,
+            }
+        }else{
+            data = {
+                askTime : askTime,
+                employment_jobId : employment_jobId,
+                employmentId :employmentId,
+                remark : remark,
+            }
+        }
+
+        $.post(url,data,function(result){
+            if(result.status === 200){
+                alert(result.message);
+                ReloadData();
+            }else{
+                alert(result.message);
+            }
+        });
+        // 把EDITID 清空，不然下次还会是修改
+        EDITID = "";
+    }
+    
+    // 模态框关闭
+    $("#employment_job_sure").click(function(){
+        $("#employment_job_modal").modal("hide");
+    });
+        
+
+    // 添加按钮，弹出模态框
+    $("#btn_employment_job").click(function(){
+        $("#employment_job_modal").modal("show"); 
+    });
+
+    // 点击模态框的确认按钮，存入数据
+    $("#employment_job_sure").click(function(){
+        employment_job_add();
+    });
+
+    // 监听模态框关闭，清空数据
+    $('#employment_job_modal').on("hidden.bs.modal",function(e){
+        $(this).find('form')[0].reset();
+    })
+    
+
+
+    // 加载文档后执行
+    $(function(){
+
+        // 加载数据
+        ReloadData();
+
+        // 事件代理，删除、修改
+        $("#table tbody").on("click","button",function(){
+            
+            // 删除事件
+            switch(this.id){
+                case "del_employment_job":{
+                    var id = $(this).parents('tr').children('td').find('input').val();
+                   // var url = BASEURL + "/Employmentemployment_job/deleteById";
+                    var data = "id="+id;                   
+                    $.post(url,data,function(result){
+                        if(result.status===200){
+                            alert(result.message);
+                            ReloadData();
+                        }else{
+                            alert(result.message);
+                        }
+                    })
+                }
+                break;
+
+                // 修改事件
+                case "upd_employment_job":{
+                    $("employment_job_modal").modal('show');
+                    EDITID = $(this).parents('tr').children('td').find('input').val();
+                    var employment_jobId= $(this).parents('tr').children('td:nth-child(3)').text();
+                    var employmentId= $(this).parents('tr').children('td:nth-child(4)').text();
+                    var askTime= $(this).parents('tr').children('td:nth-child(5)').text();
+                    var remark= $(this).parents('tr').children('td:nth-child(11)').text();
+                    
+                    $("#employment_jobId_modal").val(employment_jobId);
+                    $("#employmentId_modal").val(employmentId);
+                    $("#askTime_modal").val(askTime);
+                    $("#remark_modal").val(remark);
+
+    
+                }
+                break;
+            }
+        });
+
+
+        // 根据id查询
+        $("#btn_search_employment_job").click(function(){
+            //var url=BASEURL + "/Employmentemployment_job/findById";
+            var id = $("#search_employment_job").val();
+            
+            
+            $.get(url,"id="+id,function(result){
+                if(result.status === 200){
+                    $("#table tbody").empty();
+                        var newTr = $(`<tr>
+                            <td><input type="checkbox" value="`+(result.data).id+`"></td>
+                            <td>`+(result.data).employment_jobId+`</td>
+                            <td>`+(result.data).employmentId+`</td>
+                            <td>`+(result.data).askTime+`</td>
+                            <td>`+(result.data).remark+`</td>
+                            <td>
+                            <button id="del_employment_job" type="button" class="btn btn-dark btn-sm" >删除</button>
+                            <button id="upd_employment_job" type="button" class="btn btn-dark btn-sm" >修改</button>
+                            </td>
+                            
+                            </tr>`);
+
+                        $("#table tbody").append(newTr);
+                    
+                }else{
+                    alert(result.message);
+                }
+            })
+        });
+
+        
+    });
+
+</script>
+
+<!-- 最外面的容器 -->
+<div id="out" >
+    <!-- 添加按钮 -->
+    <button id="btn_employment_job" type="button" class="btn btn-dark" style="margin-bottom: 20px;">添加</button>
+
+    <!-- 搜索框、搜索按钮 -->
+    <div id="search_box" class="input-group ">
+        <input id="search_employment_job" type="text" class="form-control" placeholder="请输入id查询" aria-label="输入的id是" aria-describedby="search">
+        <div class="input-group-append">
+            <button id="btn_search_employment_job" class="btn btn btn-dark" type="button" >查询</button>
+        </div>
+    </div>
+    <!-- 表格，表头 -->
+    <table id="table" class="table table-striped">
+        <thead class="thead-dark">
+            <tr >
+            <th scope="col" >编号</th>
+            <th scope="col" >求职者id</th>
+            <th scope="col" >意向职业id</th>
+            <th scope="col" >求职时间</th>
+            <th scope="col" >标记</th>
+            <th scope="col" style="width: 120px;">操作</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    
+
+    
+    
+</div>
